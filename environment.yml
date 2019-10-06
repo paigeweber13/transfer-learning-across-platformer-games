@@ -65,5 +65,7 @@ dependencies:
   - xz=5.2.4=h2fa13f4_1001
   - zlib=1.2.11=h62dcd97_3
   - zstd=1.4.0=hd8a0e53_0
+  - pip:
+    - pygame==1.9.6
 prefix: C:\Users\Riley\Anaconda3\envs\super-mario-kart-ml-ai-comparison
 
