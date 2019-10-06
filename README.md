@@ -14,3 +14,5 @@ Group project for ITCS 6156, Fall 2019
     - when he tells you to download BizHawk stuff, put that in the BizHawk
       folder.
     - when he tells you to download his stuff, put that in the SethBling folder.
+    - when running the neural network, use defaults.cfg, not config/sample.cfg
+    - I had to change 'Pixels' to 'pixels' in QLearning/defaults.cfg
