@@ -16,3 +16,18 @@ Group project for ITCS 6156, Fall 2019
     - when he tells you to download his stuff, put that in the SethBling folder.
     - when running the neural network, use defaults.cfg, not config/sample.cfg
     - I had to change 'Pixels' to 'pixels' in QLearning/defaults.cfg
+
+# Findings
+We're trying to decipher SethBling's code and how to use it. Here are some
+notes on things that we've discovered so far.
+
+## Getting environment info:
+lines 341 of learn.py is the following:
+    for time_step in range(config.get_sequence_length()):
+        # Get the experience data from the client
+        screen, controller, reward, do_display, pos = client.receive()
+(see also lines 258-274)
+
+the client object seems to be what provides information from the emulator...
+This game client is stored in game_client.py and it seems to be the server that
+the lua script connects to.
