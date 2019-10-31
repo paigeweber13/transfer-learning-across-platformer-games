@@ -20,6 +20,13 @@ Group project for ITCS 6156, Fall 2019
     - when running the neural network, use defaults.cfg, not config/sample.cfg
     - I had to change 'Pixels' to 'pixels' in QLearning/defaults.cfg
 
+# Environment code ownership
+The code in ./environment was originally based off sethbling's MariQ code, then
+edited by us. [Sethbling can be found on
+youtube](https://www.youtube.com/channel/UC8aG3LDTDwNR1UQhSn9uVrw). A video
+about the aforementioned MariQ code (as well as links to the code itself) is
+[available here](https://www.youtube.com/watch?v=Tnu4O_xEmVk&t=1s).
+
 # Findings
 We're trying to decipher SethBling's code and how to use it. Here are some
 notes on things that we've discovered so far.
