@@ -1,3 +1,5 @@
 SethBling
 *.rom
 *.smc
+model
+__pycache__
