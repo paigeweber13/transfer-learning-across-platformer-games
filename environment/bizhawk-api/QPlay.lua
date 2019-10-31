@@ -1,6 +1,6 @@
 local Game = nil
 
-Game = require("SMKScreen")
+Game = require("./SMKScreen")
 
 client.pause()
 
