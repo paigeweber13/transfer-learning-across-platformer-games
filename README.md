@@ -8,6 +8,9 @@ Group project for ITCS 6156, Fall 2019
  - activate that environment using `conda activate 
    super-mario-kart-ml-ai-comparison`. This will need to be done every time you
    work on this project.
+ - obtain a ROM for super mario kart and 
+ - obtain dsp1b.rom, the firmware for SNES
+ - place both roms in BizHawk/SNES
  - Follow SethBling's instructions:
     - [Instructions for MarIQ](https://docs.google.com/document/d/1uxzeSMqj56YGWh8LkzfNriuGvA3aWU3olg-MSCgWuSI/edit)
     - [Instructions for MariFlow](https://docs.google.com/document/d/1p4ZOtziLmhf0jPbZTTaFxSKdYqE91dYcTNqTVdd6es4/edit)
