@@ -7,30 +7,12 @@ import pickle
 
 # os.system("python -m retro.import ./roms")
 
-#print('all available games:')
-# list of all available envs is also here:
-# https://github.com/openai/retro/tree/master/retro/data/stable
-#print(retro.data.list_games())
 
-print('testing super mario bros env:')
-env = retro.make(game='SuperMarioBros-Nes', state='Level1-1',
-        record='./replays')
+# env = retro.make(game='SuperMarioBros-Nes', state='Level1-1',
+#         record='./replays')
+env = retro.make(game='SuperMarioBros-Nes', state='Level1-1')
+
 oned_image = []
-
-# env.reset()
-
-# done = False
-
-# while not done:
-#     env.render()
-    
-#     #action = env.action_space.sample()
-#     action = [0,0,1,0,0,0,0,1,0,1,0,0]
-
-    
-#     ob, rew, done, info = env.step(action)
-#     print("Action ", action, "Reward ", rew)
-
 
 def eval_genomes(genomes, config):
 
