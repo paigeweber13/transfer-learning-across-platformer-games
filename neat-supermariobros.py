@@ -35,7 +35,7 @@ def eval_genomes(genomes, config):
 
     for genome_id, genome in genomes:
         
-        ob = env.reset # First image
+        ob = env.reset() # First image
         random_action = env.action_space.sample()
         inx,iny,inc = env.observation_space.shape # inc = color
         # image reduction for faster processing
