@@ -1,6 +1,6 @@
 # import os
 import retro
-import numpy as numpy # For image-matrix/vector operations
+import numpy as np # For image-matrix/vector operations
 import cv2 # For image reduction
 import neat
 import pickle
