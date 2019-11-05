@@ -13,7 +13,8 @@ import pickle
 #print(retro.data.list_games())
 
 print('testing super mario bros env:')
-env = retro.make(game='SuperMarioBros-Nes', state='Level1-1', record=True)
+env = retro.make(game='SuperMarioBros-Nes', state='Level1-1',
+        record='./replays')
 oned_image = []
 
 # env.reset()
@@ -85,8 +86,9 @@ p = neat.Population(config)
 p.add_reporter(neat.StdOutReporter(True))
 stats = neat.StatisticsReporter()
 p.add_reporter(stats)
-# Save the process after each 10 frames
-p.add_reporter(neat.Checkpointer(10))
+# Save the process after each x frames
+p.add_reporter(neat.Checkpointer(generation_interval=1000,
+    filename_prefix='checkpoints/SuperMarioBros-neat-'))
 
 winner = p.run(eval_genomes)
 
