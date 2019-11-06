@@ -2,5 +2,5 @@
 roms
 replays
 checkpoints
-config_feedforward
-.vscode*
+config*
+.vscode/*
