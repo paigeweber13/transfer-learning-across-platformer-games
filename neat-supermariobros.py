@@ -1,4 +1,5 @@
-# import os
+import glob
+import os
 import retro
 import numpy as np # For image-matrix/vector operations
 import cv2 # For image reduction
@@ -8,9 +9,9 @@ import pickle
 # os.system("python -m retro.import ./roms")
 
 
-# env = retro.make(game='SuperMarioBros-Nes', state='Level1-1',
-#         record='./replays')
-env = retro.make(game='SuperMarioBros-Nes', state='Level1-1')
+env = retro.make(game='SuperMarioBros-Nes', state='Level1-1',
+        record='./replays')
+# env = retro.make(game='SuperMarioBros-Nes', state='Level1-1')
 
 oned_image = []
 
@@ -63,7 +64,15 @@ def eval_genomes(genomes, config):
 config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
                      neat.DefaultSpeciesSet, neat.DefaultStagnation,
                      './config_feedforward')
-p = neat.Population(config)
+
+# restore most recent checkpoint, if they exist:
+list_of_files = glob.glob('./checkpoints/*') 
+if len(list_of_files) > 0:
+    print('loading most recent checkpoint...')
+    latest_file = max(list_of_files, key=os.path.getctime)
+    p = neat.Checkpointer.restore_checkpoint(latest_file)
+else:
+    p = neat.Population(config)
 
 p.add_reporter(neat.StdOutReporter(True))
 stats = neat.StatisticsReporter()
@@ -76,3 +85,4 @@ winner = p.run(eval_genomes)
 
 with open('winner.pkl', 'wb') as output:
     pickle.dump(winner, output, 1)
+
