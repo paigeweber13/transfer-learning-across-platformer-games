@@ -17,6 +17,8 @@ parser.add_argument('-d', '--downscale', default=8, type=int,
                     help='How much to reduce input dimensons (X / N)')
 parser.add_argument('-g', '--game', default='SuperMarioBros-Nes', type=str,
                     help='Name of the game environment')
+parser.add_argument('-e', '--generations', default=100, type=int,
+                    help='Number of generations to run')
 parser.add_argument('-r', '--record', default=False, type=bool,
                     help='Record replays into "./replays"')
 parser.add_argument('-s', '--state', default='Level1-1', type=str,
@@ -25,10 +27,10 @@ parser.add_argument('-s', '--state', default='Level1-1', type=str,
 args = parser.parse_args()
 
 
-
+env = retro.make(game=args.game, state=args.state, record=args.record)
 def eval_genomes(genomes, config):
     for genome_id, genome in genomes:
-        env = retro.make(game=args.game, state=args.state, record=args.record)
+
         ob = env.reset()
 
         inx = int(ob.shape[0]/args.downscale)
@@ -45,7 +47,6 @@ def eval_genomes(genomes, config):
 
         # The downsampled frame that the network sees
         cv2.namedWindow("network input", cv2.WINDOW_NORMAL)
-        #cv2.resizeWindow("network input", 224,240) # Resize the above window
         while not done:
             env.render()
             frame+=1
@@ -77,28 +78,10 @@ def eval_genomes(genomes, config):
 
             genome.fitness = fitness_current
 
-def modifyConfig(file,searchExp,replaceExp):
-    for line in fileinput.input(file, inplace=1):
-        if searchExp in line:
-            line = line.replace(searchExp,replaceExp)
-        sys.stdout.write(line)
-
-
-
-# Quick work around to be able to change downsample size with command line arguments.
-# xs = 224 // args.downsample
-# ys = 240 // args.downsample
-# zs = 1
-# input_ds = int(xs * ys * zs)
-# modifyConfig('config_feedforward', 'num_inputs = 840', 'num_inputs = %d' % input_ds)
-
 # Load in the changed config file
 config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
                      neat.DefaultSpeciesSet, neat.DefaultStagnation,
-                     './config_feedforward')
-
-# # Change back the config file to original
-# modifyConfig('config_feedforward', 'num_inputs = %s' % input_ds, 'num_inputs = 840')
+                     './config-feedforward')
 
 if args.checkpoint == ' ':
     p = neat.Population(config)
@@ -109,11 +92,18 @@ else:
 p.add_reporter(neat.StdOutReporter(True))
 stats = neat.StatisticsReporter()
 p.add_reporter(stats)
+
 # Save the process after each x frames
 p.add_reporter(neat.Checkpointer(generation_interval=1000, filename_prefix='checkpoints/SuperMarioBros-neat-'))
 
-winner = p.run(eval_genomes)
+winner = p.run(eval_genomes, args.generations)
 
-visualize.draw_net(config, winner)
+# Display the winning genome.
+print("-> Best genome: %s\n->Fitness: %s" % (winner.key, winner.fitness))
+# visualize.draw_net(config, winner, True)
+# visualize.plot_stats(stats, ylog=False, view=True)
+# visualize.plot_species(stats, view=True)
+
+print("-> saving winner")
 with open('winner.pkl', 'wb') as output:
     pickle.dump(winner, output, 1)
