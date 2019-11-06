@@ -4,6 +4,9 @@ import numpy as np
 import cv2 
 import neat
 import pickle
+import fileinput
+import sys
+import glob
 
 parser = argparse.ArgumentParser(description='Training')
 # Network/training arguments
@@ -21,6 +24,8 @@ parser.add_argument('-s', '--state', default='Level1-1', type=str,
                     help='State for the game environment')
 parser.add_argument('--greyscale', default=True, type=bool,
                     help='RGB to greyscale for the network input')
+parser.add_argument('--checkpoint', default=False, type=bool,
+                    help='Start from checkpoint')
 
 args = parser.parse_args()
 
@@ -43,7 +48,10 @@ def eval_genomes(genomes, config):
         assert isinstance(args.downsample, int), '--downsample must be an integer value.'
         inx = int(inx/args.downsample)
         iny = int(iny/args.downsample)
+        if args.greyscale:
+            inc = 1
 
+        config.genome_config.num_inputs = inx * iny * inc
         # Model initialization
         model = neat.nn.RecurrentNetwork.create(genome,config)
         current_max_fitness = 0
@@ -52,8 +60,11 @@ def eval_genomes(genomes, config):
         counter = 0
         
         done = False
+
+        # The downsampled frame that the network sees
         cv2.namedWindow("network input", cv2.WINDOW_NORMAL)
-        #cv2.resizeWindow("network input", 224,240)
+        #cv2.resizeWindow("network input", 224,240) # Resize the above window
+
         while not done:
             
             if args.render:
@@ -63,6 +74,8 @@ def eval_genomes(genomes, config):
 
             ob = cv2.resize(ob,(inx,iny)) # Ob is the current frame
             ob = cv2.cvtColor(ob, cv2.COLOR_BGR2GRAY) # Colors are not important for learning
+
+            # displays the input to the model (downsampled frames)
             cv2.imshow('network input', ob)
             cv2.waitKey(1)
             ob = np.reshape(ob,(inx,iny))
@@ -86,11 +99,41 @@ def eval_genomes(genomes, config):
                 print(genome_id,fitness_current)
 
             genome.fitness = fitness_current
-            
+
+def modifyConfig(file,searchExp,replaceExp):
+    for line in fileinput.input(file, inplace=1):
+        if searchExp in line:
+            line = line.replace(searchExp,replaceExp)
+        sys.stdout.write(line)
+
+
+
+# Quick work around to be able to change downsample size with command line arguments.
+xs = 224 // args.downsample
+ys = 240 // args.downsample
+zs = 1
+input_ds = int(xs * ys * zs)
+modifyConfig('config_feedforward', 'num_inputs = 840', 'num_inputs = %d' % input_ds)
+
+# Load in the changed config file
 config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
                      neat.DefaultSpeciesSet, neat.DefaultStagnation,
                      './config_feedforward')
-p = neat.Population(config)
+
+# Change back the config file to original
+modifyConfig('config_feedforward', 'num_inputs = %s' % input_ds, 'num_inputs = 840')
+
+if args.checkpoint:
+    # restore most recent checkpoint, if they exist:
+    list_of_files = glob.glob('./checkpoints/*') 
+    if len(list_of_files) > 0:
+        print('loading most recent checkpoint...')
+        latest_file = max(list_of_files, key=os.path.getctime)
+        p = neat.Checkpointer.restore_checkpoint(latest_file)
+else: 
+    p = neat.Population(config)
+
+
 p.add_reporter(neat.StdOutReporter(True))
 stats = neat.StatisticsReporter()
 p.add_reporter(stats)
