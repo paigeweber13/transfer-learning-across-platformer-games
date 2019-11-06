@@ -1,7 +1,7 @@
 ## Learning to play games using OpenAI gym-retro with NEAT
 NEAT (NeuroEvolution of Augmenting Topologies) is a method developed by Kenneth O. Stanley for evolving arbitrary neural networks. 
 
-For further information regarding general concepts and theory, please see Selected Publications on Stanley's [website](http://nn.cs.utexas.edu/downloads/papers/stanley.ec02.pdf).
+For further information regarding general concepts and theory, please see Selected Publications on Stanley's [website](http://www.cs.ucf.edu/~kstanley/#publications)
 
 ### Training
 The training files can run with default arguments
@@ -35,6 +35,8 @@ python3 playback.py -d <downscale rate> -g <game> -p <path-to-winner.pkl> -s <st
 ```
 
 ### Additional References
+The NEAT [paper](http://nn.cs.utexas.edu/downloads/papers/stanley.ec02.pdf)
+
 [retro-gym](https://github.com/openai/retro)
 
 [neat-python](https://github.com/CodeReclaimers/neat-python)
