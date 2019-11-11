@@ -23,7 +23,7 @@ env = retro.make(game=args.game, state=args.state)
 
 config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
                      neat.DefaultSpeciesSet, neat.DefaultStagnation,
-                     'config_feedforward')
+                     'config-feedforward')
 
 p = neat.Population(config)
 
@@ -67,7 +67,7 @@ while not done:
         for y in x:
             imgarray.append(y)
     
-    nnOutput = net.activate(imgarray)
+    nnOutput = model.activate(imgarray)
     
     ob, rew, done, info = env.step(nnOutput)
     imgarray.clear()
