@@ -32,7 +32,7 @@ def eval_genomes(genomes, config):
     for genome_id, genome in genomes:
 
         ob = env.reset()
-
+        print(ob)
         inx = int(ob.shape[0]/args.downscale)
         iny = int(ob.shape[1]/args.downscale)
         done = False
@@ -58,11 +58,13 @@ def eval_genomes(genomes, config):
             cv2.imshow('network input', ob)
             cv2.waitKey(1)
             ob = np.reshape(ob,(inx,iny))
-
+            #action = [0,0,0,0,0,0,1,1,1]
             oned_image = np.ndarray.flatten(ob)
             neuralnet_output = model.activate(oned_image) # Give an output for current frame from neural network
+            
+            #ob, rew, done, info = env.step(action) # Try given output from network in the game
             ob, rew, done, info = env.step(neuralnet_output) # Try given output from network in the game
-
+            print(neuralnet_output)
             fitness_current += rew
             if fitness_current>current_max_fitness:
                 current_max_fitness = fitness_current
