@@ -50,17 +50,11 @@ def eval_genomes(genomes, config):
     #cv2.resizeWindow("network input", 224,240) # Resize the above window
 
     while not done:
-        # if args.render:
-        #     if generation % args.render_freq == 0:
-        #         env.render() # Optional
         frame+=1
-        #env.render()
+
         ob = cv2.resize(ob,(inx,iny)) # Ob is the current frame
         ob = cv2.cvtColor(ob, cv2.COLOR_BGR2GRAY) # Colors are not important for learning
 
-        # displays the input to the model (downsampled frames)
-        # cv2.imshow('network input', ob)
-        # cv2.waitKey(1)
         ob = np.reshape(ob,(inx,iny))
 
 
@@ -84,35 +78,18 @@ def eval_genomes(genomes, config):
         #genomes.fitness = fitness_current
     return fitness_current
 
-def modifyConfig(file,searchExp,replaceExp):
-    for line in fileinput.input(file, inplace=1):
-        if searchExp in line:
-            line = line.replace(searchExp,replaceExp)
-        sys.stdout.write(line)
-
-
-
-# Quick work around to be able to change downsample size with command line arguments.
-# xs = 224 // args.downsample
-# ys = 240 // args.downsample
-# zs = 1
-# input_ds = int(xs * ys * zs)
-# modifyConfig('config_feedforward', 'num_inputs = 840', 'num_inputs = %d' % input_ds)
 
 # Load in the changed config file
 config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
                      neat.DefaultSpeciesSet, neat.DefaultStagnation,
-                     './config_feedforward')
-
-# # Change back the config file to original
-# modifyConfig('config_feedforward', 'num_inputs = %s' % input_ds, 'num_inputs = 840')
+                     './config-feedforward')
 
 if args.checkpoint == ' ':
     p = neat.Population(config)
 else:
 
     print('-> Loading %s...' % args.checkpoint)
-    p = neat.Checkpointer.restore_checkpoint("./checkpoints/" + args.checkpoint)
+    p = neat.Checkpointer.restore_checkpoint(args.checkpoint)
 
 p.add_reporter(neat.StdOutReporter(True))
 stats = neat.StatisticsReporter()
