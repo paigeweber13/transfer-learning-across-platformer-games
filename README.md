@@ -6,6 +6,9 @@ For further information regarding general concepts and theory, please see Select
 ### Training
 The training files can run with default arguments
 
+If you adjust the downsampling or play a different game, you will need to
+adjust "num_inputs" in your config file
+
 #### Single-threaded
 This will train using a single cpu core as well as render the OpenAI environment and downsampled network input. 
 
@@ -28,6 +31,10 @@ Format:
 python3 train-parallel.py -c <checkpoint-filepath> -d <downscale rate> -g <game-env> -e <number-of-generations> -p <number of threads> -r <record (bool)> -s <state>
 ```
 
+##### Example Commands:
+`python3 train-parallel.py -d 16 -g SuperMarioWorld-Snes -r ./replays -p 12 -s YoshiIsland1`
+
+
 #### Playback
 This will playback the winning genome (or any genome saved in the pickle format)
 ```bash
@@ -43,4 +50,7 @@ The NEAT [paper](http://nn.cs.utexas.edu/downloads/papers/stanley.ec02.pdf)
 
 [Medium blog post](https://medium.com/datadriveninvestor/super-mario-bros-reinforcement-learning-77d6615a805e)
 
+### TODO:
+ - get size of input programmatically
+ - read parameter of "-r" to specify replay directory
 
