@@ -46,5 +46,10 @@ Population of 1006 members in 23 species:
     14   29    16   1000.0    0.020    15
 
 .05 survival threshold, 100 individuals per generation, 500 generations
+Population of 100 members in 1 species:
+   ID   age  size  fitness  adj fit  stag
+  ====  ===  ====  =======  =======  ====
+     1  499   100   4400.0    0.051    85
+Total extinctions: 0
 
 also mess with mutation rates?
