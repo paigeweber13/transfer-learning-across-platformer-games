@@ -1,6 +1,13 @@
 The following are data on max fitness for a NEAT agent playing super mario
 world with various hyperparameters.
 
+only the top performers from the experiment are included
+
+# Adjusting num individuals per generation and num generations:
+constants: 
+   downsample: 16
+   state: YoshiIsnald1
+   
 24 individuals per generation, 1000 generations
 Best performer:
    ID   age  size  fitness  adj fit  stag
@@ -22,7 +29,7 @@ Best performer:
     31    5    17   1200.0    0.087     4
     32    3    33   2000.0    0.111     2
 
-1000 individuals per generation, 100 generations
+1000 individuals per generation, 30 generations
 
 3 elite species
 
