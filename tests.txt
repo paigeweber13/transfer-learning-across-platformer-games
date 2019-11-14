@@ -1,0 +1,31 @@
+The following are data on max fitness for a NEAT agent playing super mario
+world with various hyperparameters.
+
+24 individuals per generation, 1000 generations
+Best performer:
+   ID   age  size  fitness  adj fit  stag
+  ====  ===  ====  =======  =======  ====
+     3  996    24   4400.0    0.205   141
+
+48 individuals per generation, 1000 generations
+   ID   age  size  fitness  adj fit  stag
+  ====  ===  ====  =======  =======  ====
+    16  207     7   4400.0    0.206   174
+    19   53    16   3800.0    0.237    28
+    20   52    16   4400.0    0.189    41
+    21    0     9       --       --     0
+
+100 individuals per generation, 500 generations
+   ID   age  size  fitness  adj fit  stag
+  ====  ===  ====  =======  =======  ====
+    23  133    50   4800.0    0.199   132
+    31    5    17   1200.0    0.087     4
+    32    3    33   2000.0    0.111     2
+
+1000 individuals per generation, 100 generations
+
+3 elite species
+
+.1 survival threshold
+
+also mess with mutation rates?
