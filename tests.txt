@@ -30,9 +30,21 @@ Best performer:
     32    3    33   2000.0    0.111     2
 
 1000 individuals per generation, 30 generations
+Population of 1019 members in 83 species:
+   ID   age  size  fitness  adj fit  stag
+  ====  ===  ====  =======  =======  ====
+     5   29     8   1200.0    0.053    10
+     6   29    20   3800.0    0.161    20
+     7   29    12   1400.0    0.089     2
 
-3 elite species
+.05 survival threshold, 1000 individuals, 30 generations
+Population of 1006 members in 23 species:
+   ID   age  size  fitness  adj fit  stag
+  ====  ===  ====  =======  =======  ====
+    12   29    37   2200.0    0.042     6
+    13   29    55   4600.0    0.081    18
+    14   29    16   1000.0    0.020    15
 
-.1 survival threshold
+.05 survival threshold, 100 individuals per generation, 500 generations
 
 also mess with mutation rates?
