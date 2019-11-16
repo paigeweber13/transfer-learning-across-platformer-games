@@ -4,9 +4,10 @@ world with various hyperparameters.
 only the top performers from the experiment are included
 
 # Adjusting num individuals per generation and num generations:
-constants: 
-   downsample: 16
-   state: YoshiIsnald1
+Unless otherwise specified,
+ - downsample is 16
+ - State is YoshiIsnald1
+ - survival rate is 0.3
    
 24 individuals per generation, 1000 generations
 Best performer:
@@ -53,3 +54,5 @@ Population of 100 members in 1 species:
 Total extinctions: 0
 
 also mess with mutation rates?
+
+downsample 8, 100 individuals, 500 generations
