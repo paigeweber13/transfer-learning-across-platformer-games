@@ -1,0 +1,1 @@
+downsample, survival, pop_size, num_generations
