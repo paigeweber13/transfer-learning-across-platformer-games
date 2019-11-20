@@ -71,7 +71,6 @@ def print_header():
           'num_generations_before_success', 'total_time', 
           'time_per_generation', sep=',')
 
-# run_train_parallel(8, 2)
 
 # test downsample
 status_string = 'testing different downsample sizes:'
@@ -102,12 +101,12 @@ print_header()
 j = 0.05
 while j < 0.35:
     logging.debug(j)
-    set_config(survival=i)
+    set_config(survival=j)
     start_time = time.time()
-    num_generations_needed = run_train_parallel(i, max_num_generations)
+    num_generations_needed = run_train_parallel(8, max_num_generations)
     end_time = time.time()
     duration = end_time - start_time
-    print(i, 0.2, 100, num_generations_needed, duration, 
+    print(8, j, 100, num_generations_needed, duration, 
           duration/num_generations_needed, sep=',')
     j += 0.05
 
@@ -121,12 +120,12 @@ reset_config()
 k = 50
 while k < 500:
     logging.debug(k)
-    set_config(pop_size=i)
+    set_config(pop_size=k)
     start_time = time.time()
-    num_generations_needed = run_train_parallel(i, max_num_generations)
+    num_generations_needed = run_train_parallel(8, max_num_generations)
     end_time = time.time()
     duration = end_time - start_time
-    print(i, 0.2, 100, num_generations_needed, duration, 
+    print(8, 0.2, k, num_generations_needed, duration, 
           duration/num_generations_needed, sep=',')
     k *= 2
 
