@@ -3,6 +3,7 @@ import logging
 import os
 import re
 import subprocess
+import time
 
 logging.basicConfig(filename='automatic-experiments.log',level=logging.DEBUG)
 
@@ -67,7 +68,8 @@ def run_train_parallel(downsample, max_num_generations):
 
 def print_header():
     print('downsample', 'survival', 'pop_size', 
-          'num_generations_before_success', sep=',')
+          'num_generations_before_success', 'total_time', 
+          'time_per_generation', sep=',')
 
 # run_train_parallel(8, 2)
 
@@ -77,32 +79,58 @@ logging.debug(status_string)
 print(status_string)
 reset_config()
 print_header()
+
 i = 32
 while i > 3:
     logging.debug(i)
     set_config(downsample=i)
+    start_time = time.time()
     num_generations_needed = run_train_parallel(i, max_num_generations)
-    print(i, 0.2, 100, num_generations_needed, sep=',')
+    end_time = time.time()
+    duration = end_time - start_time
+    print(i, 0.2, 100, num_generations_needed, duration, 
+          duration/num_generations_needed, sep=',')
     i = int(i/2)
     
-# # test survival rate
-# logging.debug('testing different survival rates:')
-# reset_config()
-# j = 0.05
-# while j < 0.35:
-#     logging.debug(j)
-#     j += 0.05
+# test survival rate
+status_string = 'testing different survival rates:'
+logging.debug(status_string)
+print(status_string)
+reset_config()
+print_header()
 
-# # test pop_size
-# logging.debug('testing different population sizes:')
-# reset_config()
-# k = 50
-# while k < 500:
-#     logging.debug(k)
-#     k *= 2
+j = 0.05
+while j < 0.35:
+    logging.debug(j)
+    set_config(survival=i)
+    start_time = time.time()
+    num_generations_needed = run_train_parallel(i, max_num_generations)
+    end_time = time.time()
+    duration = end_time - start_time
+    print(i, 0.2, 100, num_generations_needed, duration, 
+          duration/num_generations_needed, sep=',')
+    j += 0.05
 
-# # test num generations...?
-# # l = 50
-# # while l < 500:
-# #     l *= 2
-# #     print(i, j, k, l, sep=', ')
+# test pop_size
+status_string = 'testing different population sizes:'
+logging.debug(status_string)
+print(status_string)
+reset_config()
+print_header()
+reset_config()
+k = 50
+while k < 500:
+    logging.debug(k)
+    set_config(pop_size=i)
+    start_time = time.time()
+    num_generations_needed = run_train_parallel(i, max_num_generations)
+    end_time = time.time()
+    duration = end_time - start_time
+    print(i, 0.2, 100, num_generations_needed, duration, 
+          duration/num_generations_needed, sep=',')
+    k *= 2
+
+# test num generations...?
+# l = 50
+# while l < 500:
+#     l *= 2
