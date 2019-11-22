@@ -73,6 +73,7 @@ def print_header():
 
 
 # test downsample
+print()
 status_string = 'testing different downsample sizes:'
 logging.debug(status_string)
 print(status_string)
@@ -92,6 +93,7 @@ while i > 3:
     i = int(i/2)
     
 # test survival rate
+print()
 status_string = 'testing different survival rates:'
 logging.debug(status_string)
 print(status_string)
@@ -99,7 +101,7 @@ reset_config()
 print_header()
 
 j = 0.05
-while j < 0.35:
+while j < 0.26:
     logging.debug(j)
     set_config(survival=j)
     start_time = time.time()
@@ -108,9 +110,10 @@ while j < 0.35:
     duration = end_time - start_time
     print(8, j, 100, num_generations_needed, duration, 
           duration/num_generations_needed, sep=',')
-    j += 0.05
+    j += 0.01
 
 # test pop_size
+print()
 status_string = 'testing different population sizes:'
 logging.debug(status_string)
 print(status_string)
@@ -127,7 +130,7 @@ while k < 500:
     duration = end_time - start_time
     print(8, 0.2, k, num_generations_needed, duration, 
           duration/num_generations_needed, sep=',')
-    k *= 2
+    k *= 1.5
 
 # test num generations...?
 # l = 50
