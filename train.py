@@ -15,19 +15,19 @@ parser.add_argument('-c', '--checkpoint', default=' ', type=str,
                     help='Path to checkpoint file')
 parser.add_argument('-d', '--downscale', default=8, type=int,
                     help='How much to reduce input dimensons (X / N)')
-parser.add_argument('-g', '--game', default='SuperMarioBros-Nes', type=str,
+parser.add_argument('-g', '--game', default='DonkeyKongCountry-Snes', type=str,
                     help='Name of the game environment')
 parser.add_argument('-e', '--generations', default=100, type=int,
                     help='Number of generations to run')
 parser.add_argument('-r', '--record', default=False, type=bool,
                     help='Record replays into "./replays"')
-parser.add_argument('-s', '--state', default='Level1-1', type=str,
-                    help='State for the game environment')
+# parser.add_argument('-s', '--state', default='Level1-1', type=str,
+#                    help='State for the game environment')
 
 args = parser.parse_args()
 
-
-env = retro.make(game=args.game, state=args.state, record=args.record)
+# env = retro.make(game=args.game, state=args.state, record=args.record)
+env = retro.make(game=args.game, record=args.record)
 def eval_genomes(genomes, config):
     for genome_id, genome in genomes:
 
@@ -83,7 +83,7 @@ def eval_genomes(genomes, config):
 # Load in the changed config file
 config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
                      neat.DefaultSpeciesSet, neat.DefaultStagnation,
-                     './config-feedforward')
+                     './config_feedforward')
 
 if args.checkpoint == ' ':
     p = neat.Population(config)

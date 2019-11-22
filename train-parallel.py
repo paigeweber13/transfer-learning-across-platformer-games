@@ -17,7 +17,7 @@ parser.add_argument('-d', '--downscale', default=8, type=int,
                     help='How much to reduce input dimensons (X / N)')
 parser.add_argument('-e', '--generations', default=100, type=int,
                     help='Number of generations to run')
-parser.add_argument('-g', '--game', default='SuperMarioBros-Nes', type=str,
+parser.add_argument('-g', '--game', default='DonkeyKongCountry-Snes', type=str,
                     help='Name of the game environment')
 parser.add_argument('-p', '--parallel', default=2, type=int,
                     help='Runs "p" genomes at once')
@@ -30,7 +30,7 @@ args = parser.parse_args()
 assert args.parallel > 1, 'Parallel must be higher 2 or more'
 
 def eval_genomes(genomes, config):
-    env = retro.make(game=args.game, state=args.state, record=args.record)
+    env = retro.make(game=args.game, record=args.record)
     ob = env.reset()
 
     inx = int(ob.shape[0]/args.downscale)
@@ -82,7 +82,7 @@ def eval_genomes(genomes, config):
 # Load in the changed config file
 config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
                      neat.DefaultSpeciesSet, neat.DefaultStagnation,
-                     './config-feedforward')
+                     './config_feedforward')
 
 if args.checkpoint == ' ':
     p = neat.Population(config)
@@ -96,7 +96,7 @@ stats = neat.StatisticsReporter()
 p.add_reporter(stats)
 # Save the process after each x frames
 p.add_reporter(neat.Checkpointer(generation_interval=10,
-    filename_prefix='checkpoints/SuperMarioBros-neat-'))
+    filename_prefix='checkpoints/DonkeyKongCountry-neat-'))
 
 
 pe = neat.parallel.ParallelEvaluator(args.parallel, eval_genomes)
