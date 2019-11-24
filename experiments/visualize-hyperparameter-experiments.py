@@ -8,6 +8,8 @@ from sklearn.preprocessing import PolynomialFeatures
 
 ### survival rates
 survival_data = pd.read_csv('experiments/smw-first-to-4000-survival-rate.csv')
+# drop the one case with 0.3 survival rate
+survival_data = survival_data[survival_data.survival != 0.3]
 survival_data.sort_values('survival', inplace=True)
 
 # aggregate all results by survival rate, take mean of them
