@@ -36,6 +36,9 @@ plt.figure(figsize=(10,7))
 # plt.plot(survival_rate, num_generations)
 plt.scatter(survival_rate, time_to_success)
 plt.plot(survival_rate, time_regression)
+plt.title('Training speed with varying survival rates')
+plt.xlabel('Survival rate')
+plt.ylabel('Time to success')
 plt.show()
 
 ### pop_size
