@@ -1,6 +1,5 @@
 .python-version
 roms
 replays
-checkpoints
 config*
 .vscode/*
