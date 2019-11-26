@@ -60,6 +60,7 @@ actions_smw = [
             [0, 0, 0, 0, 0, 0, 0, 0, 0]
         ]
 
+state = args.state
 game = args.game
 env = retro.make(game=args.game, state=args.state, record=args.record)
 def eval_genomes(genomes, config):
@@ -80,7 +81,7 @@ def eval_genomes(genomes, config):
                 print("Cropped observation space shape: ", ob.shape)
 
             # Remove '.state' from state name for saving file
-            args.state = args.state[0:-6]
+            state = args.state[0:-6]
         
         inx = int(ob.shape[0]/args.downscale)
         iny = int(ob.shape[1]/args.downscale)
@@ -107,9 +108,9 @@ def eval_genomes(genomes, config):
             cv2.imshow('network input', ob)
             cv2.waitKey(1)
             ob = np.reshape(ob,(inx,iny))
-            print(ob.shape)
+            #print(ob.shape)
             flattend_ob = np.ndarray.flatten(ob)
-            print(flattend_ob.shape)
+            #print(flattend_ob.shape)
             neuralnet_output = model.activate(flattend_ob) # Give an output for current frame from neural network
 
             # Reduce the action space so that all games have the same sized action space
@@ -153,8 +154,8 @@ p.add_reporter(stats)
 
 # Save the process after each x frames
 if args.reduced_action:
-    args.game += '(REDUCED)'
-output_path = 'checkpoints/' + args.game + "/" + args.state + "/" + datetime.now().strftime("%m.%d.%y@%H:%M") + "/"
+    game += '(REDUCED)'
+output_path = 'checkpoints/' + game + "/" + state + "/" + datetime.now().strftime("%m.%d.%y@%H:%M") + "/"
 output_file = "checkpoint-"
 if not os.path.exists(output_path):
     os.makedirs(output_path)
@@ -170,5 +171,5 @@ print("-> Best genome: %s\n->Fitness: %s" % (winner.key, winner.fitness))
 # visualize.plot_species(stats, view=True)
 
 print("-> saving winner")
-with open(output_path + "/winner/" + args.state + '.pkl', 'wb') as output:
+with open(output_path + "/winner/" + state + '.pkl', 'wb') as output:
     pickle.dump(winner, output, 1)

@@ -66,12 +66,11 @@ actions_smw = [
             [0, 0, 0, 0, 0, 0, 0, 0, 0]
         ]
 
+state = args.state
 game = args.game
 def eval_genomes(genomes, config):
     env = retro.make(game=args.game, state=args.state, record=args.record)
     ob = env.reset()
-    if args.reduced_action:
-        print("-> Using reduced action space...")
 
     if args.debug:
         print("Original observation space shape: ",ob.shape)
@@ -81,7 +80,7 @@ def eval_genomes(genomes, config):
         ob = ob[:, 0:240, :]
 
         # Remove '.state' from state name for saving file
-        args.state = args.state[0:-6]
+        state = args.state[0:-6]
 
     if args.debug:
         print("Cropped observation space shape: ", ob.shape)
@@ -147,14 +146,17 @@ else:
     print('-> Loading %s...' % args.checkpoint)
     p = neat.Checkpointer.restore_checkpoint(args.checkpoint)
 
+
+if args.reduced_action:
+    print("-> Using reduced action space...")
 p.add_reporter(neat.StdOutReporter(True))
 stats = neat.StatisticsReporter()
 p.add_reporter(stats)
 # Save the process after each x frames
 # Save the process after each x frames
 if args.reduced_action:
-    args.game += '(REDUCED)'
-output_path = 'checkpoints/' + args.game + "/" + args.state + "/" + datetime.now().strftime("%m.%d.%y@%H:%M") + "/"
+    game += '(REDUCED)'
+output_path = 'checkpoints/' + game + "/" + state + "/" + datetime.now().strftime("%m.%d.%y@%H:%M") + "/"
 output_file = "checkpoint-"
 if not os.path.exists(output_path):
     os.makedirs(output_path)
@@ -166,7 +168,7 @@ pe = neat.parallel.ParallelEvaluator(args.parallel, eval_genomes)
 winner = p.run(pe.evaluate, args.generations)
 
 print("-> saving winner")
-with open(output_path + "/winner/" + args.state + '.pkl', 'wb') as output:
+with open(output_path + "/winner/" + state + '.pkl', 'wb') as output:
     pickle.dump(winner, output, 1)
 
 print("-> cleaning up checkpoints...")
