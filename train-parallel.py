@@ -10,6 +10,8 @@ import glob
 import visualize
 from datetime import datetime
 import os
+from shutil import copyfile
+import glob
 
 parser = argparse.ArgumentParser(description='Training')
 # Network/training arguments
@@ -157,7 +159,8 @@ output_file = "checkpoint-"
 if not os.path.exists(output_path):
     os.makedirs(output_path)
     os.makedirs(output_path + "/winner/")
-p.add_reporter(neat.Checkpointer(generation_interval=100, filename_prefix=output_path + output_file))
+    copyfile("config-feedforward", output_path + "config-feedforward")
+p.add_reporter(neat.Checkpointer(generation_interval=1, filename_prefix=output_path + output_file))
 
 pe = neat.parallel.ParallelEvaluator(args.parallel, eval_genomes)
 winner = p.run(pe.evaluate, args.generations)
@@ -165,3 +168,15 @@ winner = p.run(pe.evaluate, args.generations)
 print("-> saving winner")
 with open(output_path + "/winner/" + args.state + '.pkl', 'wb') as output:
     pickle.dump(winner, output, 1)
+
+print("-> cleaning up checkpoints...")
+CWD = os.getcwd()
+os.chdir(output_path)
+results = []
+for file in glob.glob("checkpoint-*"):
+    results.append(file)
+
+results.sort()
+results = results[0:-1]
+for i in results:
+    os.remove(i)
