@@ -160,7 +160,7 @@ if not os.path.exists(output_path):
     os.makedirs(output_path)
     os.makedirs(output_path + "/winner/")
     copyfile("config-feedforward", output_path + "config-feedforward")
-p.add_reporter(neat.Checkpointer(generation_interval=1, filename_prefix=output_path + output_file))
+p.add_reporter(neat.Checkpointer(generation_interval=100, filename_prefix=output_path + output_file))
 
 pe = neat.parallel.ParallelEvaluator(args.parallel, eval_genomes)
 winner = p.run(pe.evaluate, args.generations)
