@@ -8,10 +8,13 @@ import fileinput
 import sys
 import glob
 import visualize
+from datetime import datetime
+import os
+
 
 parser = argparse.ArgumentParser(description='Training')
 # Network/training arguments
-parser.add_argument('-c', '--checkpoint', default=' ', type=str,
+parser.add_argument('-c', '--checkpoint', default='', type=str,
                     help='Path to checkpoint file')
 parser.add_argument('-d', '--downscale', default=8, type=int,
                     help='How much to reduce input dimensons (X / N)')
@@ -23,16 +26,62 @@ parser.add_argument('-r', '--record', default=False, type=bool,
                     help='Record replays into "./replays"')
 parser.add_argument('-s', '--state', default='Level1-1', type=str,
                     help='State for the game environment')
-
+parser.add_argument('--debug', default='', type=str,
+                    help='Allow verbose debug prints')
+parser.add_argument('--reduced-action', dest="reduced_action", default='', type=str,
+                    help='Reduces the action space for each game')
 args = parser.parse_args()
 
+def _get_actions_smb(a):
+    return actions_smb[a.index(max(a))]
 
+def _get_actions_smw(a):
+    return actions_smw[a.index(max(a))]
+
+actions_smb = [
+            # Move right
+            [0, 0, 0, 0, 0, 0, 0, 1, 0],
+            # Jump
+            [0, 0, 0, 0, 0, 0, 0, 0, 1],
+            # Move right and jump
+            [0, 0, 0, 0, 0, 0, 0, 1, 1],
+            # Stand still
+            [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ]
+
+actions_smw = [
+            # Move right
+            [0, 0, 0, 0, 0, 0, 0, 1, 0],
+            # Jump
+            [0, 0, 0, 0, 0, 0, 0, 0, 1],
+            # Move right and jump
+            [0, 0, 0, 0, 0, 0, 0, 1, 1],
+            # Stand still
+            [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ]
+
+game = args.game
 env = retro.make(game=args.game, state=args.state, record=args.record)
 def eval_genomes(genomes, config):
     for genome_id, genome in genomes:
 
         ob = env.reset()
-        print(ob)
+        if args.debug:
+            if args.reduced_action:
+                print("-> Using reduced action space...")
+            print("Original observation space shape: ",ob.shape)
+        #print(env.action_space)
+
+        if game == 'SuperMarioWorld-Snes':
+            # Crop image to match Super Mario Bros
+            ob = ob[:, 0:240, :]
+            if args.debug:
+                print("-> Cropping SMW to fit SMB...")
+                print("Cropped observation space shape: ", ob.shape)
+
+            # Remove '.state' from state name for saving file
+            args.state = args.state[0:-6]
+        
         inx = int(ob.shape[0]/args.downscale)
         iny = int(ob.shape[1]/args.downscale)
         done = False
@@ -50,7 +99,7 @@ def eval_genomes(genomes, config):
         while not done:
             env.render()
             frame+=1
-
+            
             ob = cv2.resize(ob,(inx,iny)) # Ob is the current frame
             ob = cv2.cvtColor(ob, cv2.COLOR_BGR2GRAY) # Colors are not important for learning
 
@@ -58,21 +107,28 @@ def eval_genomes(genomes, config):
             cv2.imshow('network input', ob)
             cv2.waitKey(1)
             ob = np.reshape(ob,(inx,iny))
-            #action = [0,0,0,0,0,0,1,1,1]
-            oned_image = np.ndarray.flatten(ob)
-            neuralnet_output = model.activate(oned_image) # Give an output for current frame from neural network
+            print(ob.shape)
+            flattend_ob = np.ndarray.flatten(ob)
+            print(flattend_ob.shape)
+            neuralnet_output = model.activate(flattend_ob) # Give an output for current frame from neural network
+
+            # Reduce the action space so that all games have the same sized action space
+            if args.reduced_action:
+                if args.game == "SuperMarioBros-Nes":
+                    neuralnet_output = _get_actions_smb(neuralnet_output)
+                elif args.game == "SuperMarioWorld-Snes":
+                    neuralnet_output = _get_actions_smw(neuralnet_output)
             
-            #ob, rew, done, info = env.step(action) # Try given output from network in the game
             ob, rew, done, info = env.step(neuralnet_output) # Try given output from network in the game
-            print(neuralnet_output)
+            
             fitness_current += rew
             if fitness_current>current_max_fitness:
                 current_max_fitness = fitness_current
                 counter = 0
             else:
-                counter+=1
                 # count the frames until it successful
-
+                counter+=1
+                
             # Train mario for max 250 frames
             if done or counter == 250:
                 done = True 
@@ -85,18 +141,25 @@ config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
                      neat.DefaultSpeciesSet, neat.DefaultStagnation,
                      './config-feedforward')
 
-if args.checkpoint == ' ':
-    p = neat.Population(config)
-else:
+if args.checkpoint:
     print('-> Loading %s...' % args.checkpoint)
-    p = neat.Checkpointer.restore_checkpoint("./checkpoints/" + args.checkpoint)
+    p = neat.Checkpointer.restore_checkpoint(args.checkpoint)
+else:
+    p = neat.Population(config)
 
 p.add_reporter(neat.StdOutReporter(True))
 stats = neat.StatisticsReporter()
 p.add_reporter(stats)
 
 # Save the process after each x frames
-p.add_reporter(neat.Checkpointer(generation_interval=1000, filename_prefix='checkpoints/SuperMarioBros-neat-'))
+if args.reduced_action:
+    args.game += '(REDUCED)'
+output_path = 'checkpoints/' + args.game + "/" + args.state + "/" + datetime.now().strftime("%m.%d.%y@%H:%M") + "/"
+output_file = "checkpoint-"
+if not os.path.exists(output_path):
+    os.makedirs(output_path)
+    os.makedirs(output_path + "/winner/")
+p.add_reporter(neat.Checkpointer(generation_interval=10, filename_prefix=output_path + output_file))
 
 winner = p.run(eval_genomes, args.generations)
 
@@ -107,5 +170,5 @@ print("-> Best genome: %s\n->Fitness: %s" % (winner.key, winner.fitness))
 # visualize.plot_species(stats, view=True)
 
 print("-> saving winner")
-with open('winner.pkl', 'wb') as output:
+with open(output_path + "/winner/" + args.state + '.pkl', 'wb') as output:
     pickle.dump(winner, output, 1)

@@ -8,6 +8,8 @@ import fileinput
 import sys
 import glob
 import visualize
+from datetime import datetime
+import os
 
 parser = argparse.ArgumentParser(description='Training')
 # Network/training arguments
@@ -25,13 +27,62 @@ parser.add_argument('-r', '--record', default=False, type=bool,
                     help='Record replays into "./replays"')
 parser.add_argument('-s', '--state', default='Level1-1', type=str,
                     help='State for the game environment')
+parser.add_argument('--debug', default='', type=str,
+                    help='Allow verbose debug prints')
+parser.add_argument('--reduced-action', dest="reduced_action", default='', type=str,
+                    help='Reduces the action space for each game')
 
 args = parser.parse_args()
 assert args.parallel > 1, 'Parallel must be higher 2 or more'
 
+
+def _get_actions_smb(a):
+    return actions_smb[a.index(max(a))]
+
+def _get_actions_smw(a):
+    return actions_smw[a.index(max(a))]
+
+actions_smb = [
+            # Move right
+            [0, 0, 0, 0, 0, 0, 0, 1, 0],
+            # Jump
+            [0, 0, 0, 0, 0, 0, 0, 0, 1],
+            # Move right and jump
+            [0, 0, 0, 0, 0, 0, 0, 1, 1],
+            # Stand still
+            [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ]
+
+actions_smw = [
+            # Move right
+            [0, 0, 0, 0, 0, 0, 0, 1, 0],
+            # Jump
+            [0, 0, 0, 0, 0, 0, 0, 0, 1],
+            # Move right and jump
+            [0, 0, 0, 0, 0, 0, 0, 1, 1],
+            # Stand still
+            [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ]
+
+game = args.game
 def eval_genomes(genomes, config):
     env = retro.make(game=args.game, state=args.state, record=args.record)
     ob = env.reset()
+    if args.reduced_action:
+        print("-> Using reduced action space...")
+
+    if args.debug:
+        print("Original observation space shape: ",ob.shape)
+
+    if game == 'SuperMarioWorld-Snes':
+        # Crop image to match Super Mario Bros
+        ob = ob[:, 0:240, :]
+
+        # Remove '.state' from state name for saving file
+        args.state = args.state[0:-6]
+
+    if args.debug:
+        print("Cropped observation space shape: ", ob.shape)
 
     inx = int(ob.shape[0]/args.downscale)
     iny = int(ob.shape[1]/args.downscale)
@@ -45,10 +96,6 @@ def eval_genomes(genomes, config):
     frame = 0
     counter = 0
     
-    # The downsampled frame that the network sees
-    # cv2.namedWindow("network input", cv2.WINDOW_NORMAL)
-    #cv2.resizeWindow("network input", 224,240) # Resize the above window
-
     while not done:
         frame+=1
 
@@ -57,9 +104,16 @@ def eval_genomes(genomes, config):
 
         ob = np.reshape(ob,(inx,iny))
 
-
         model_input = np.ndarray.flatten(ob)
         neuralnet_output = model.activate(model_input) # Give an output for current frame from neural network
+
+        # Reduce the action space so that all games have the same sized action space
+        if args.reduced_action:
+            if args.game == "SuperMarioBros-Nes":
+                neuralnet_output = _get_actions_smb(neuralnet_output)
+            elif args.game == "SuperMarioWorld-Snes":
+                neuralnet_output = _get_actions_smw(neuralnet_output)
+
         ob, rew, done, info = env.step(neuralnet_output) # Try given output from network in the game
 
         fitness_current += rew
@@ -95,13 +149,19 @@ p.add_reporter(neat.StdOutReporter(True))
 stats = neat.StatisticsReporter()
 p.add_reporter(stats)
 # Save the process after each x frames
-p.add_reporter(neat.Checkpointer(generation_interval=10,
-    filename_prefix='checkpoints/SuperMarioBros-neat-'))
-
+# Save the process after each x frames
+if args.reduced_action:
+    args.game += '(REDUCED)'
+output_path = 'checkpoints/' + args.game + "/" + args.state + "/" + datetime.now().strftime("%m.%d.%y@%H:%M") + "/"
+output_file = "checkpoint-"
+if not os.path.exists(output_path):
+    os.makedirs(output_path)
+    os.makedirs(output_path + "/winner/")
+p.add_reporter(neat.Checkpointer(generation_interval=100, filename_prefix=output_path + output_file))
 
 pe = neat.parallel.ParallelEvaluator(args.parallel, eval_genomes)
 winner = p.run(pe.evaluate, args.generations)
 
 print("-> saving winner")
-with open('winner.pkl', 'wb') as output:
+with open(output_path + "/winner/" + args.state + '.pkl', 'wb') as output:
     pickle.dump(winner, output, 1)
