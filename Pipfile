@@ -10,6 +10,8 @@ gym-retro = "*"
 opencv-python = "*"
 neat-python = "*"
 numpy = "*"
+graphviz = "*"
+matplotlib = "*"
 
 [requires]
 python_version = "3.7"

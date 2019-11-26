@@ -23,7 +23,7 @@ parser.add_argument('-g', '--game', default='SuperMarioBros-Nes', type=str,
                     help='Name of the game environment')
 parser.add_argument('-p', '--parallel', default=2, type=int,
                     help='Runs "p" genomes at once')
-parser.add_argument('-r', '--record', default=False, type=bool,
+parser.add_argument('-r', '--record', default=False, type=str,
                     help='Record replays into "./replays"')
 parser.add_argument('-s', '--state', default='Level1-1', type=str,
                     help='State for the game environment')
