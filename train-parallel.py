@@ -75,7 +75,9 @@ def eval_genomes(genomes, config):
     if args.debug:
         print("Original observation space shape: ",ob.shape)
 
-    if game == 'SuperMarioWorld-Snes':
+    if args.game == 'SuperMarioWorld-Snes':
+        if args.debug:
+            print("-> SuperMarioWorld cropping...")
         # Crop image to match Super Mario Bros
         ob = ob[:, 0:240, :]
 
@@ -171,14 +173,14 @@ print("-> saving winner")
 with open(output_path + "/winner/" + state + '.pkl', 'wb') as output:
     pickle.dump(winner, output, 1)
 
-print("-> cleaning up checkpoints...")
-CWD = os.getcwd()
-os.chdir(output_path)
-results = []
-for file in glob.glob("checkpoint-*"):
-    results.append(file)
+# print("-> cleaning up checkpoints...")
+# CWD = os.getcwd()
+# os.chdir(output_path)
+# results = []
+# for file in glob.glob("checkpoint-*"):
+#     results.append(file)
 
-results.sort()
-results = results[0:-1]
-for i in results:
-    os.remove(i)
+# results.sort()
+# results = results[0:-1]
+# for i in results:
+#     os.remove(i)

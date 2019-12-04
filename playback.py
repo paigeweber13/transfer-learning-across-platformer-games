@@ -15,8 +15,42 @@ parser.add_argument('-p', '--playback', default='winner.pkl', type=str,
                     help='Path to pickle file to playback')
 parser.add_argument('-s', '--state', default='Level1-1', type=str,
                     help='State for the game environment')
+parser.add_argument('--reduced-action', dest="reduced_action", default='', type=str,
+                    help='Reduces the action space for each game')
 
 args = parser.parse_args()
+
+
+def _get_actions_smb(a):
+    return actions_smb[a.index(max(a))]
+
+def _get_actions_smw(a):
+    return actions_smw[a.index(max(a))]
+
+actions_smb = [
+            # Move right
+            [0, 0, 0, 0, 0, 0, 0, 1, 0],
+            # Jump
+            [0, 0, 0, 0, 0, 0, 0, 0, 1],
+            # Move right and jump
+            [0, 0, 0, 0, 0, 0, 0, 1, 1],
+            # Stand still
+            [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ]
+
+actions_smw = [
+            # Move right
+            [0, 0, 0, 0, 0, 0, 0, 1, 0],
+            # Jump
+            [0, 0, 0, 0, 0, 0, 0, 0, 1],
+            # Move right and jump
+            [0, 0, 0, 0, 0, 0, 0, 1, 1],
+            # Stand still
+            [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ]
+
+
+
 
 imgarray = []
 env = retro.make(game=args.game, state=args.state)
@@ -67,9 +101,16 @@ while not done:
         for y in x:
             imgarray.append(y)
     
-    nnOutput = model.activate(imgarray)
+    neuralnet_output = model.activate(imgarray)
+
+    # Reduce the action space so that all games have the same sized action space
+    if args.reduced_action:
+        if args.game == "SuperMarioBros-Nes":
+            neuralnet_output = _get_actions_smb(neuralnet_output)
+        elif args.game == "SuperMarioWorld-Snes":
+            neuralnet_output = _get_actions_smw(neuralnet_output)
     
-    ob, rew, done, info = env.step(nnOutput)
+    ob, rew, done, info = env.step(neuralnet_output)
     imgarray.clear()
     
     fitness_current += rew
