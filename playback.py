@@ -70,6 +70,11 @@ with open(args.playback, 'rb') as input_file:
 
 ob = env.reset()
 
+if args.game == 'SuperMarioWorld-Snes':
+
+    # Crop image to match Super Mario Bros
+    ob = ob[:, 0:240, :]
+
 inx = int(ob.shape[0]/args.downscale)
 iny = int(ob.shape[1]/args.downscale)
 

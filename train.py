@@ -73,7 +73,7 @@ def eval_genomes(genomes, config):
             print("Original observation space shape: ",ob.shape)
         #print(env.action_space)
 
-        if game == 'SuperMarioWorld-Snes':
+        if args.game == 'SuperMarioWorld-Snes':
             # Crop image to match Super Mario Bros
             ob = ob[:, 0:240, :]
             if args.debug:
