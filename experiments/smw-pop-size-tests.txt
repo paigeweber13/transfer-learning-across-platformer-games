@@ -1,0 +1,58 @@
+The following are data on max fitness for a NEAT agent playing super mario
+world with various hyperparameters.
+
+only the top performers from the experiment are included
+
+# Adjusting num individuals per generation and num generations:
+Unless otherwise specified,
+ - downsample is 16
+ - State is YoshiIsnald1
+ - survival rate is 0.3
+   
+24 individuals per generation, 1000 generations
+Best performer:
+   ID   age  size  fitness  adj fit  stag
+  ====  ===  ====  =======  =======  ====
+     3  996    24   4400.0    0.205   141
+
+48 individuals per generation, 1000 generations
+   ID   age  size  fitness  adj fit  stag
+  ====  ===  ====  =======  =======  ====
+    16  207     7   4400.0    0.206   174
+    19   53    16   3800.0    0.237    28
+    20   52    16   4400.0    0.189    41
+    21    0     9       --       --     0
+
+100 individuals per generation, 500 generations
+   ID   age  size  fitness  adj fit  stag
+  ====  ===  ====  =======  =======  ====
+    23  133    50   4800.0    0.199   132
+    31    5    17   1200.0    0.087     4
+    32    3    33   2000.0    0.111     2
+
+1000 individuals per generation, 30 generations
+Population of 1019 members in 83 species:
+   ID   age  size  fitness  adj fit  stag
+  ====  ===  ====  =======  =======  ====
+     5   29     8   1200.0    0.053    10
+     6   29    20   3800.0    0.161    20
+     7   29    12   1400.0    0.089     2
+
+.05 survival threshold, 1000 individuals, 30 generations
+Population of 1006 members in 23 species:
+   ID   age  size  fitness  adj fit  stag
+  ====  ===  ====  =======  =======  ====
+    12   29    37   2200.0    0.042     6
+    13   29    55   4600.0    0.081    18
+    14   29    16   1000.0    0.020    15
+
+.05 survival threshold, 100 individuals per generation, 500 generations
+Population of 100 members in 1 species:
+   ID   age  size  fitness  adj fit  stag
+  ====  ===  ====  =======  =======  ====
+     1  499   100   4400.0    0.051    85
+Total extinctions: 0
+
+also mess with mutation rates?
+
+downsample 8, 100 individuals, 500 generations
